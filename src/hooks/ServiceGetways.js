@@ -14,7 +14,7 @@ let useGetData = () => {
             if (token) {
                 let {data: {result, result_message}} = await axios.get(query ? `http://localhost:3000/api/${action}?${qs.stringify(query)}` : `http://localhost:3000/api/${action}`, {
                     headers: {
-                        authorization: `Bearer ${token}`,
+                        authorization: `${token}`,
                         'x-api-lang': 'TR'
                     }
                 })

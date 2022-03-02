@@ -6,6 +6,7 @@ import FooterSetting from '../FooterSetting/FooterSetting';
 import FruitsSetting from '../FruitsSetting/FruitsSetting';
 import HeaderSetting from '../HeaderSetting/HeaderSetting';
 import Home from '../Home/Home';
+import Users from '../Users/Users';
 import VegetablesSetting from '../VegetablesSetting/VegetablesSetting';
 
 const MasterPage = () => {
@@ -23,6 +24,7 @@ const MasterPage = () => {
             <Sidebar>
                 <Route exact path="/" component={Home} />
                 <Route exact path="/admin-setting" component={AdminSetting} />
+                <Route exact path="/users" component={Users} />
                 <Route exact path="/header-setting" component={HeaderSetting} />
                 <Route exact path="/footer-setting" component={FooterSetting} />
                 <Route exact path="/vegatables-setting" component={VegetablesSetting} />
