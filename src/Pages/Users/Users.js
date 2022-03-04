@@ -38,10 +38,6 @@ const Users = () => {
     };
 
 
-    const showUserModal = () => {
-        setIsUserModalVisible(true);
-    };
-
     const onFinish = () => {
         addUser()
         setIsUserModalVisible(false);
@@ -118,78 +114,97 @@ const Users = () => {
     }
 
 
-
-
     return (
         <>
 
             <Modal title="Uyarı!" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                 <p>Kullanıcıyı silmek istediğinizden emin misiniz ?</p>
             </Modal>
+            {
+                isUserModalVisible && <div>
+                    <div className="popup-filter"></div>
+                    <div className="add-user-popup-container">
+                        <div className="card">
+                            <div className="card-header">
+                                <h3>Kullanıcı Ekle</h3>
+                                <button className="close-button" onClick={() => setIsUserModalVisible(false)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="card-body">
 
-            <Modal title="Yeni Kullanıcı Ekle" visible={isUserModalVisible} footer={false}>
-                <Form
-                    name="basic"
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                >
-                    <Form.Item
-                        label="İsim Soyisim"
-                        name="name"
-                        rules={[{ required: true, message: 'Lütfen adınızı girin!' }]}
-                    >
-                        <Input onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })} type="text" placeholder="Enter Name" className="w-100 mb-3" />
-                    </Form.Item>
+                                <Form
+                                    name="basic"
+                                    onFinish={onFinish}
+                                    onFinishFailed={onFinishFailed}
+                                >
+                                    <Form.Item
+                                        label="İsim Soyisim"
+                                        name="name"
+                                        rules={[{ required: true, message: 'Lütfen adınızı girin!' }]}
+                                    >
+                                        <Input onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })} type="text" placeholder="Enter Name" className="w-100 mb-3" />
+                                    </Form.Item>
 
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[{ required: true, message: 'Lütfen Email girin!' }]}
-                    >
-                        <Input onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })} type="email" placeholder="Enter Email" className="w-100 mb-3" />
-                    </Form.Item>
-
-
-                    <Form.Item
-                        label="Cinsiyet"
-                        name="gender"
-                        rules={[{ required: false }]}
-                    >
-                        <Switch onChange={gender} size="default" checkedChildren="Female" unCheckedChildren="Male" className="mb-3" />
-                    </Form.Item>
+                                    <Form.Item
+                                        label="Email"
+                                        name="email"
+                                        rules={[{ required: true, message: 'Lütfen Email girin!' }]}
+                                        className="mb-3"
+                                    >
+                                        <Input onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })} type="email" placeholder="Enter Email" className="w-100 mb-3" />
+                                    </Form.Item>
 
 
-                    <Form.Item
-                        label="Doğum Tarihi"
-                        name="birthday"
-                        rules={[{ required: true, message: 'Lütfen Doğum Günü girin!' }]}
-                    >
-                        <DatePicker onChange={birthdayString} size="large" className="w-100 mb-3" format={dateFormatList} />
-                    </Form.Item>
+                                    <Form.Item
+                                        label="Cinsiyet"
+                                        name="gender"
+                                        rules={[{ required: false }]}
+                                    >
+                                        <Switch onChange={gender} size="default" checkedChildren="Female" unCheckedChildren="Male" className="mb-3" />
+                                    </Form.Item>
 
-                    <Form.Item
-                        label="Şifre"
-                        name="password"
-                        rules={[{ required: true, message: 'Lütfen Şifre giriniz!' }]}
-                    >
-                        <Input onChange={(e) => setUserInfo({ ...userInfo, password: e.target.value })} type="password" className="w-100 mb-3" placeholder="Enter Password" />
-                    </Form.Item>
 
-                    <Form.Item>
-                        <Button type="primary" className="w-100" size="large" htmlType="submit">
-                            Kayıt Et
-                        </Button>
-                    </Form.Item>
+                                    <Form.Item
+                                        label="Doğum Tarihi"
+                                        name="birthday"
+                                        rules={[{ required: true, message: 'Lütfen Doğum Günü girin!' }]}
+                                    >
+                                        <DatePicker onChange={birthdayString} size="large" className="w-100 mb-3" format={dateFormatList} />
+                                    </Form.Item>
 
-                </Form>
-            </Modal>
+                                    <Form.Item
+                                        label="Şifre"
+                                        name="password"
+                                        rules={[{ required: true, message: 'Lütfen Şifre giriniz!' }]}
+                                    >
+                                        <Input onChange={(e) => setUserInfo({ ...userInfo, password: e.target.value })} type="password" className="w-100 mb-3" placeholder="Enter Password" />
+                                    </Form.Item>
+
+                                    <Form.Item>
+                                        <Button type="primary" className="w-100" size="large" htmlType="submit">
+                                            Kayıt Et
+                                        </Button>
+                                    </Form.Item>
+
+                                </Form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
 
             <div className="card">
                 <div className="card-body">
                     <h3>Kullanıcılar</h3>
 
                     <div className="d-flex justify-content-end mb-3 w-100">
-                        <Button onClick={showUserModal}>Yeni Ekle</Button>
+                        <Button onClick={() => setIsUserModalVisible(true)}>Yeni Ekle</Button>
                     </div>
 
                     <div className="table-responsive">
@@ -209,7 +224,7 @@ const Users = () => {
                                 {
                                     userList && userList.map((data, key) => (
                                         <tr key={key}>
-                                            <th scope="row">{key+1}</th>
+                                            <th scope="row">{key + 1}</th>
                                             <td>{data.name}</td>
                                             <td>{data.birthdayString}</td>
                                             <td>{data.email}</td>
@@ -217,7 +232,7 @@ const Users = () => {
                                             <td>{data.createdAt}</td>
                                             <td>
                                                 <Button type="primary" onClick={() => { showModal(); setUserıd(data._id) }}>Sil</Button>
-                                                <Button className="ml-4">Düzenle</Button>
+                                                <Button className="ml-4" >Düzenle</Button>
                                             </td>
                                         </tr>
                                     ))

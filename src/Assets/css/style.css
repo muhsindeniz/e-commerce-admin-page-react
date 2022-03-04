@@ -14595,3 +14595,41 @@ iframe {
   .ant-layout-content{
     padding: 20px 0 !important;
   }
+
+  .add-user-popup-container{
+      width: 450px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 101;
+  }
+
+.popup-filter{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+
+  .close-button{
+      background: transparent;
+      border: none;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+  }
+
+  .close-button svg path{
+    stroke-width: 20px;
+  }
+
+  .vegetablePopupContainer{
+      max-height: 450px;
+      overflow-x: hidden;
+      overflow-y: auto;
+  }

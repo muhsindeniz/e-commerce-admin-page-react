@@ -185,7 +185,7 @@ let useUploadFile = () => {
                 let { data: { result, result_message } } = await axios.post(`http://localhost:3000/api/upload`, formData, {
                     headers: {
                         'ContenType': 'multipart/form-data',
-                        authorization: `Bearer ${token}`
+                        authorization: token
                     },
                     onUploadProgress: event => {
                         const percent = Math.floor((event.loaded / event.total) * 100);
