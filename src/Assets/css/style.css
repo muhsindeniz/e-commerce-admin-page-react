@@ -14605,6 +14605,18 @@ iframe {
       z-index: 101;
   }
 
+  @media only screen and (max-width: 768px){
+    .add-user-popup-container{
+        width: calc(100% - 20px) !important;
+    }
+  }
+
+  .add-user-popup-container .card-body{
+      max-height: 500px;
+      overflow-x: hidden;
+      overflow-y: auto;
+  }
+
 .popup-filter{
     position: fixed;
     top: 0;
@@ -14632,4 +14644,69 @@ iframe {
       max-height: 450px;
       overflow-x: hidden;
       overflow-y: auto;
+  }
+
+  .fileUploadContainer{
+      width: 110px;
+      height: 110px;
+      border: dashed 2px #cdcdcd;
+      border-radius: 10px;
+      display: flex;
+      padding: 5px;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+  }
+
+  .fileUploadContainer img{
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .deleteImageFileUpload{
+    padding: 10px;
+    border-radius: 12px;
+    background: darkred;
+    color: #fff;
+    font-size: 24px;
+    width: 120px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .uploadImageSetting{
+      display: flex;
+      align-items: center;
+  }
+
+  .fileUploadContainer:hover{
+      cursor: pointer;
+  }
+
+    .deleteImageFileUpload{
+      font-size: 13px;
+  }
+
+    .deleteImageFileUpload svg{
+    margin-left: 10px;
+  }
+
+    .deleteImageFileUpload:hover{
+      cursor: pointer;
+  }
+
+  .image-product_container{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .image-product_container img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }

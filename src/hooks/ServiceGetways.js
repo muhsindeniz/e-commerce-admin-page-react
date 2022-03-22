@@ -12,7 +12,7 @@ let useGetData = () => {
         let { query } = params;
         try {
             if (token) {
-                let {data: {result, result_message}} = await axios.get(query ? `http://localhost:3000/api/${action}?${qs.stringify(query)}` : `http://localhost:3000/api/${action}`, {
+                let { data: { result, result_message } } = await axios.get(query ? `http://localhost:3000/api/${action}?${qs.stringify(query)}` : `http://localhost:3000/api/${action}`, {
                     headers: {
                         authorization: `${token}`,
                         'x-api-lang': 'TR'
@@ -57,7 +57,7 @@ let usePostData = () => {
     let call = useMemo(() => async (action, values) => {
         if (token) {
             try {
-                let {data: {result, result_message}} = await axios.post(`http://localhost:3000/api/${action}`, values, {
+                let { data: { result, result_message } } = await axios.post(`http://localhost:3000/api/${action}`, values, {
                     headers: {
                         authorization: `Bearer ${token}`
                     }
@@ -95,7 +95,7 @@ let useDeleteData = () => {
     let call = useMemo(() => async (action) => {
         if (token) {
             try {
-                let {data: {result, result_message}} = await axios.delete(`http://localhost:3000/api/${action}`, {
+                let { data: { result, result_message } } = await axios.delete(`http://localhost:3000/api/${action}`, {
                     headers: {
                         authorization: `Bearer ${token}`
                     }
@@ -182,26 +182,21 @@ let useUploadFile = () => {
                 const formData = new FormData();
                 values.files.forEach(file => formData.append('files', file));
 
-                let { data: { result, result_message } } = await axios.post(`http://localhost:3000/api/upload`, formData, {
+                await axios.post(`http://localhost:3000/api/upload`, formData, {
                     headers: {
-                        'ContenType': 'multipart/form-data',
-                        authorization: token
+                        'ContenType': 'multipart/form-data'
                     },
                     onUploadProgress: event => {
                         const percent = Math.floor((event.loaded / event.total) * 100);
                         setProgress(percent - 1);
                     }
                 })
-
-                if (result_message && result_message.type === 'token_expire') {
-                    Cookies.remove("token")
-                    setToken(null);
-                    return (result_message.message)
-                }
-                else if (!result && result_message.type === 'error')
-                    throw Error(result_message.message)
-                else
-                    return ({ result, result_message })
+                .then(resp => {
+                    return resp
+                })         
+                .catch(err => {
+                    return err
+                })   
             }
             catch (error) {
                 if (error) {

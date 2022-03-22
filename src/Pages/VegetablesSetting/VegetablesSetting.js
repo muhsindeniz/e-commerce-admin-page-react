@@ -1,21 +1,14 @@
 import React, { useContext, useState, useEffect, useMemo, useLayoutEffect } from 'react'
-import { CompanySettingsContext } from '../../Contexts/CompanySettingsContext';
 import { GlobalSettingsContext } from '../../Contexts/GlobalSettingsContext';
 import { Button, message, Spin, Modal, Select, Input, Form, Upload } from 'antd';
 import axios from 'axios';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 
 const { Option } = Select;
-
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
+const { TextArea } = Input;
 
 function beforeUpload(file) {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
   if (!isJpgOrPng) {
     message.error('Yalnızca JPG/PNG dosyası yükleyebilirsiniz!');
   }
@@ -29,14 +22,14 @@ function beforeUpload(file) {
 const VegetablesSetting = () => {
 
   let { token } = useContext(GlobalSettingsContext)
-  let { name } = useContext(CompanySettingsContext);
   let history = useHistory();
   let [loading, setLoading] = useState(false);
   let [userId, setUserıd] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userList, setUserList] = useState(false);
   const [isUserModalVisible, setIsUserModalVisible] = useState(false);
-  let [imageUrl, setImageUrl] = useState(null)
+  let [imageData, setImageData] = useState(null)
+  let [imageUrl, setImageUrl] = useState("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
   let [productData, setProductData] = useState({
     "name": "",
     "price": "",
@@ -51,27 +44,16 @@ const VegetablesSetting = () => {
     "oil": ""
   })
 
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
-
-  let handleChange = (info) => {
-    if (info.file.status === 'uploading') {
-      setLoading(true)
-      return;
-    }
-    if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, imageUrl => {
-        setImageUrl(imageUrl)
-        setLoading(false)
-      }
-      );
-    }
-  };
-
+  function getBase64(file, cb) {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      cb(reader.result)
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+  }
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -93,31 +75,65 @@ const VegetablesSetting = () => {
     setProductData({ ...productData, farmerName: data })
   }
 
+  let fileSelectHandler = (e) => {
+    setImageData(e.target.files[0])
+    beforeUpload(e.target.files[0])
+    getBase64(e.target.files[0], setImageUrl)
+  }
 
-  const onFinish = (data) => {
-    console.log(data)
+  console.log(productData)
 
-    // setLoading(true)
-    // axios.patch(`http://localhost:3000/api/vegetables/`, { ...productData }).then(({ result_message }) => {
-    //   if (result_message.type == "success") {
-    //     message.success("Ürün başarıyla eklendi..")
-    //     history.push('/vegatables-setting')
-    //     call()
-    //     setLoading(false)
-
-    //   }
-    //   else message.error("Your information could not be updated!!", 3)
-    //   setLoading(false)
-    // })
-
+  const onFinish = async () => {
+    if (productData.name == "", productData.discount == "", productData.price == "", productData.newPrice == "", productData.productDescription == "", productData.farmerName == "", productData.avatar == "", productData.calorie == "", productData.carbohydrate == "", productData.oil == "") {
+      message.info("Please fill in all fields")
+    } else {
+      setLoading(true)
+      const formData = new FormData;
+      formData.append('image', imageData);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }
+      const url = 'http://localhost:3000/single';
+      await axios.post(url, formData, config).then(resp => {
+        setLoading(false)
+        message.success(resp.data.result_message.message)
+        axios.post('http://localhost:3000/api/addVegetables', {
+          name: productData.name,
+          price: productData.price,
+          discount: productData.discount,
+          newPrice: productData.newPrice,
+          productDescription: productData.productDescription,
+          farmerName: productData.farmerName,
+          avatar: resp.data.result.path,
+          calorie: productData.calorie,
+          carbohydrate: productData.carbohydrate,
+          protein: productData.protein,
+          oil: productData.oil
+        }, {
+          headers:
+          {
+            "Content-Type": "application/json",
+            authorization: `${token}`
+          }
+        })
+          .then(response => {
+            message.success("Ürün başarıyla eklendi");
+            setIsUserModalVisible(false)
+            setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setImageData(null)
+            call();
+          })
+          .catch(error => {
+            message.error("Could not save product information!")
+          })
+      }).catch(err => {
+        message.error("The image could not be loaded!");
+      })
+    }
   };
-
-  // console.log(productData)
-
-  const onFinishFailed = ({ errorInfo }) => {
-    message.error("Kullanıcı kaydı eklenemedi.!!")
-  };
-
 
   let call = useMemo(() => async () => {
     setLoading(true)
@@ -136,7 +152,6 @@ const VegetablesSetting = () => {
           setLoading(false)
         })
     }
-
   });
 
   useLayoutEffect(() => {
@@ -163,6 +178,9 @@ const VegetablesSetting = () => {
     }
   }
 
+  let deleteImage = () => {
+    setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
+  }
 
   return (
     <>
@@ -178,7 +196,7 @@ const VegetablesSetting = () => {
             <div className="card">
               <div className="card-header">
                 <h3>Kullanıcı Ekle</h3>
-                <button className="close-button" onClick={() => setIsUserModalVisible(false)}>
+                <button className="close-button" onClick={() => { setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
@@ -187,136 +205,99 @@ const VegetablesSetting = () => {
               </div>
               <div className="card-body">
 
-                <Form
-                  name="basic"
-                  onFinish={onFinish}
-                  onFinishFailed={onFinishFailed}
-                  labelCol={{ span: 7 }}
-                  wrapperCol={{ span: 24 }}
-                  className="vegetablePopupContainer"
-                >
-                  <Form.Item
-                    label="Ürünün Adı"
-                    name="name"
-                    rules={[{ required: true, message: 'Lütfen ürün adı giriniz!' }]}
-                  >
-                    <Input onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
-                  </Form.Item>
+                <div className="mb-3">
+                  <Input placeholder="Lütfen ürün adı giriniz!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
+                </div>
 
-                  <Form.Item
-                    label="Fiyat"
-                    name="price"
-                    rules={[{ required: true, message: 'Lütfen fiyat giriniz!' }]}
-                  >
-                    <Input onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
-                  </Form.Item>
+                <div className="mb-3">
+                  <Input placeholder="Lütfen fiyat giriniz!" onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
+                </div>
 
-                  <Form.Item label="İndirim Oranı"
-                    name="discount"
-                    rules={[{ required: true, message: 'Lütfen indirim oranı giriniz!' }]}>
-                    <Select onChange={discount}>
-                      <Option value="0">%0</Option>
-                      <Option value="5">%5</Option>
-                      <Option value="10">%10</Option>
-                      <Option value="15">%15</Option>
-                      <Option value="20">%20</Option>
-                      <Option value="25">%25</Option>
-                      <Option value="30">%30</Option>
-                      <Option value="35">%35</Option>
-                      <Option value="40">%40</Option>
-                      <Option value="45">%45</Option>
-                      <Option value="50">%50</Option>
-                      <Option value="55">%55</Option>
-                      <Option value="60">%60</Option>
-                      <Option value="65">%65</Option>
-                      <Option value="70">%70</Option>
-                      <Option value="75">%75</Option>
-                      <Option value="80">%80</Option>
-                      <Option value="85">%85</Option>
-                      <Option value="90">%90</Option>
-                      <Option value="95">%95</Option>
-                      <Option value="100">%100</Option>
-                    </Select>
-                  </Form.Item>
+                <div className="mb-3">
+                  <label>Lütfen indirim oranı giriniz!</label>
+                  <Select className="w-100" onChange={discount}>
+                    <Option value="0">%0</Option>
+                    <Option value="5">%5</Option>
+                    <Option value="10">%10</Option>
+                    <Option value="15">%15</Option>
+                    <Option value="20">%20</Option>
+                    <Option value="25">%25</Option>
+                    <Option value="30">%30</Option>
+                    <Option value="35">%35</Option>
+                    <Option value="40">%40</Option>
+                    <Option value="45">%45</Option>
+                    <Option value="50">%50</Option>
+                    <Option value="55">%55</Option>
+                    <Option value="60">%60</Option>
+                    <Option value="65">%65</Option>
+                    <Option value="70">%70</Option>
+                    <Option value="75">%75</Option>
+                    <Option value="80">%80</Option>
+                    <Option value="85">%85</Option>
+                    <Option value="90">%90</Option>
+                    <Option value="95">%95</Option>
+                    <Option value="100">%100</Option>
+                  </Select>
+                </div>
 
-                  <h4 className="d-flex justify-content-center flex-column align-items-center">
-                    Yeni Fiyat
-                    <b className="ml-3">
-                      {
-                        (parseInt(productData.price) || 0) - (((parseInt(productData.price) || 0) * (parseInt(productData.discount) || 0)) / 100)
-                      }
-                    </b>
-                  </h4>
+                <h4 className="d-flex justify-content-center flex-column align-items-center">
+                  Yeni Fiyat
+                  <b className="ml-3">
+                    {
+                      (parseInt(productData.price) || 0) - (((parseInt(productData.price) || 0) * (parseInt(productData.discount) || 0)) / 100)
+                    }
+                  </b>
+                </h4>
 
-                  <Form.Item label="Çiftçi"
-                    name="farmerName"
-                    rules={[{ required: true, message: 'Lütfen çifçiyi seçiniz!' }]}>
-                    <Select onChange={farmer}>
-                      <Option value="Muhsin Deniz">Muhsin Deniz</Option>
-                    </Select>
-                  </Form.Item>
+                <label>Lütfen çifçiyi seçiniz!</label>
+                <Select onChange={farmer} className="w-100">
+                  <Option value="Muhsin Deniz">Muhsin Deniz</Option>
+                </Select>
 
-                  <Form.Item name="avatar" label="Ürün Resmi"
-                    rules={[{ required: true, message: 'Lütfen avatar giriniz!' }]}>
-                    <Upload
-                      name="avatar"
-                      listType="picture-card"
-                      className="avatar-uploader"
-                      showUploadList={false}
-                      action="http://localhost:3000/api/addVegetables"
-                      beforeUpload={beforeUpload}
-                      onChange={handleChange}
-                    >
-                      {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                    </Upload>
-                  </Form.Item>
+                <div className="mb-3 mt-3">
+                  <div>Lütfen avatar giriniz!</div>
 
-                  <Form.Item
-                    label="Açıklama"
-                    name="productDescription"
-                    rules={[{ required: true, message: 'Lütfen açıklama giriniz!' }]}
-                  >
-                    <Input.TextArea onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
-                  </Form.Item>
+                  <div className="d-flex">
+                    <label htmlFor="image" className="fileUploadContainer">
+                      <div>
+                        <img src={imageUrl} style={{ width: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "60px" : "100%", objectFit: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "fill" : "contain", height: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "auto" : "80px" }} />
+                      </div>
+                    </label>
+                    <input hidden id="image" type="file" name="image" onChange={fileSelectHandler} />
 
-                  <Form.Item
-                    label="Kalori"
-                    name="calorie"
-                    rules={[{ required: true, message: 'Lütfen kalori giriniz!' }]}
-                  >
-                    <Input onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
-                  </Form.Item>
+                    <div className="uploadImageSetting">
+                      <div className="deleteImageFileUpload ml-4" onClick={() => deleteImage()}>
+                        Sil
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16">
+                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                  <Form.Item
-                    label="Karbonhidrat"
-                    name="carbohydrate"
-                    rules={[{ required: true, message: 'Lütfen karbonhidrat giriniz!' }]}
-                  >
-                    <Input onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
-                  </Form.Item>
+                <div className="mb-3">
+                  <TextArea placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
+                </div>
+                <div className="mb-3">
+                  <Input placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
+                </div>
 
-                  <Form.Item
-                    label="Protein"
-                    name="protein"
-                    rules={[{ required: true, message: 'Lütfen protein giriniz!' }]}
-                  >
-                    <Input onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
-                  </Form.Item>
+                <div className="mb-3">
+                  <Input placeholder="Lütfen karbonhidrat giriniz!" onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
+                </div>
 
-                  <Form.Item
-                    label="Yağ"
-                    name="oil"
-                    rules={[{ required: true, message: 'Lütfen yağ giriniz!' }]}
-                  >
-                    <Input onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
-                  </Form.Item>
+                <div className="mb-3">
+                  <Input placeholder="Lütfen protein giriniz!" onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
+                </div>
 
-                  <Form.Item>
-                    <Button type="primary" className="w-100" size="large" htmlType="submit">
-                      Kayıt Et
-                    </Button>
-                  </Form.Item>
-                </Form>
+                <div className="mb-3">
+                  <Input placeholder="Lütfen yağ giriniz!" onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
+                </div>
+
+                <Button type="primary" className="w-100" size="large" onClick={() => onFinish()}>
+                  Kayıt Et
+                </Button>
               </div>
             </div>
           </div>
