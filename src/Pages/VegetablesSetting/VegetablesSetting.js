@@ -28,7 +28,9 @@ const VegetablesSetting = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userList, setUserList] = useState(false);
   const [isUserModalVisible, setIsUserModalVisible] = useState(false);
+  const [editProductModalVisible, setEditProductModalVisible] = useState(false);
   let [imageData, setImageData] = useState(null)
+  let [proId, setProId] = useState(null)
   let [imageUrl, setImageUrl] = useState("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
   let [productData, setProductData] = useState({
     "name": "",
@@ -81,10 +83,9 @@ const VegetablesSetting = () => {
     getBase64(e.target.files[0], setImageUrl)
   }
 
-  console.log(productData)
 
   const onFinish = async () => {
-    if (productData.name == "", productData.discount == "", productData.price == "", productData.newPrice == "", productData.productDescription == "", productData.farmerName == "", productData.avatar == "", productData.calorie == "", productData.carbohydrate == "", productData.oil == "") {
+    if (productData.name == "" || productData.discount == "" || productData.price == "" || productData.newPrice == "" || productData.productDescription == "" || productData.farmerName == "" || productData.calorie == "" || productData.carbohydrate == "" || productData.oil == "") {
       message.info("Please fill in all fields")
     } else {
       setLoading(true)
@@ -128,6 +129,7 @@ const VegetablesSetting = () => {
           })
           .catch(error => {
             message.error("Could not save product information!")
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
           })
       }).catch(err => {
         message.error("The image could not be loaded!");
@@ -182,6 +184,127 @@ const VegetablesSetting = () => {
     setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
   }
 
+
+  let onEditProduct = (id) => {
+    if (id) {
+      axios.get(`http://localhost:3000/api/vegetables/${id}`, {
+        headers: {
+          Authorization: token
+        }
+      })
+        .then(res => {
+          setProductData({
+            ...productData,
+            avatar: res.data.result.avatar,
+            calorie: res.data.result.calorie,
+            carbohydrate: res.data.result.carbohydrate,
+            discount: res.data.result.discount,
+            farmerName: res.data.result.farmerName,
+            name: res.data.result.name,
+            newPrice: res.data.result.newPrice,
+            oil: res.data.result.oil,
+            price: res.data.result.price,
+            productCategory: res.data.result.productCategory,
+            productDescription: res.data.result.productDescription,
+            protein: res.data.result.protein
+          })
+          setImageUrl(`http://localhost:3000/${res.data.result.avatar}`)
+          setLoading(false)
+        })
+        .catch(e => {
+          message.info(e)
+          setLoading(false)
+        })
+    }
+  }
+
+  let onEditDataProduct = async () => {
+    if (productData.name == "" || productData.discount == "" || productData.price == "" || productData.newPrice == "" || productData.productDescription == "" || productData.farmerName == "" || productData.calorie == "" || productData.carbohydrate == "" || productData.oil == "") {
+      message.info("Please fill in all fields")
+    } else {
+      if (imageData === null) {
+        axios.patch(`http://localhost:3000/api/vegetables/${proId}`, {
+          name: productData.name,
+          price: productData.price,
+          discount: productData.discount,
+          newPrice: productData.newPrice,
+          productDescription: productData.productDescription,
+          farmerName: productData.farmerName,
+          avatar: productData.avatar,
+          calorie: productData.calorie,
+          carbohydrate: productData.carbohydrate,
+          protein: productData.protein,
+          oil: productData.oil
+        }, {
+          headers:
+          {
+            "Content-Type": "application/json",
+            authorization: `${token}`
+          }
+        })
+          .then(response => {
+            message.success("Ürün başarıyla güncellendi");
+            setEditProductModalVisible(false)
+            setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setImageData(null)
+            call();
+          })
+          .catch(error => {
+            message.error("Could not save product information!")
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+          })
+      } else {
+        const formData = new FormData;
+        formData.append('image', imageData);
+        const config = {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
+        }
+        const url = 'http://localhost:3000/single';
+        await axios.post(url, formData, config).then(resp => {
+          setLoading(false)
+          message.success(resp.data.result_message.message)
+          axios.patch(`http://localhost:3000/api/vegetables/${proId}`, {
+            name: productData.name,
+            price: productData.price,
+            discount: productData.discount,
+            newPrice: productData.newPrice,
+            productDescription: productData.productDescription,
+            farmerName: productData.farmerName,
+            avatar: resp.data.result.path,
+            calorie: productData.calorie,
+            carbohydrate: productData.carbohydrate,
+            protein: productData.protein,
+            oil: productData.oil
+          }, {
+            headers:
+            {
+              "Content-Type": "application/json",
+              authorization: `${token}`
+            }
+          })
+            .then(response => {
+              message.success("Ürün başarıyla güncellendi .!!");
+              setEditProductModalVisible(false)
+              setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
+              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setImageData(null)
+              call();
+            })
+            .catch(error => {
+              message.error("Could not save product information!")
+              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            })
+        }).catch(err => {
+          message.error("The image could not be loaded!");
+        })
+      }
+
+    }
+  }
+
   return (
     <>
 
@@ -195,8 +318,8 @@ const VegetablesSetting = () => {
           <div className="add-user-popup-container">
             <div className="card">
               <div className="card-header">
-                <h3>Kullanıcı Ekle</h3>
-                <button className="close-button" onClick={() => { setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
+                <h3>Ürün Ekleme</h3>
+                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" }); setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
@@ -304,6 +427,121 @@ const VegetablesSetting = () => {
         </div>
       }
 
+      {
+        editProductModalVisible && <div>
+          <div className="popup-filter"></div>
+          <div className="add-user-popup-container">
+            <div className="card">
+              <div className="card-header">
+                <h3>Ürün Düzenleme</h3>
+                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" }); setEditProductModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                  </svg>
+                </button>
+              </div>
+              <div className="card-body">
+
+                <div className="mb-3">
+                  <Input value={productData.name} placeholder="Lütfen ürün adı giriniz!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <Input value={productData.price} placeholder="Lütfen fiyat giriniz!" onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <label>Lütfen indirim oranı giriniz!</label>
+                  <Select value={productData.discount} className="w-100" onChange={discount}>
+                    <Option value="0">%0</Option>
+                    <Option value="5">%5</Option>
+                    <Option value="10">%10</Option>
+                    <Option value="15">%15</Option>
+                    <Option value="20">%20</Option>
+                    <Option value="25">%25</Option>
+                    <Option value="30">%30</Option>
+                    <Option value="35">%35</Option>
+                    <Option value="40">%40</Option>
+                    <Option value="45">%45</Option>
+                    <Option value="50">%50</Option>
+                    <Option value="55">%55</Option>
+                    <Option value="60">%60</Option>
+                    <Option value="65">%65</Option>
+                    <Option value="70">%70</Option>
+                    <Option value="75">%75</Option>
+                    <Option value="80">%80</Option>
+                    <Option value="85">%85</Option>
+                    <Option value="90">%90</Option>
+                    <Option value="95">%95</Option>
+                    <Option value="100">%100</Option>
+                  </Select>
+                </div>
+
+                <h4 className="d-flex justify-content-center flex-column align-items-center">
+                  Yeni Fiyat
+                  <b className="ml-3">
+                    {
+                      (parseInt(productData.price) || 0) - (((parseInt(productData.price) || 0) * (parseInt(productData.discount) || 0)) / 100)
+                    }
+                  </b>
+                </h4>
+
+                <label>Lütfen çifçiyi seçiniz!</label>
+                <Select value={productData.farmerName} onChange={farmer} className="w-100">
+                  <Option value="Muhsin Deniz">Muhsin Deniz</Option>
+                </Select>
+
+                <div className="mb-3 mt-3">
+                  <div>Lütfen avatar giriniz!</div>
+
+                  <div className="d-flex">
+                    <label htmlFor="image" className="fileUploadContainer">
+                      <div>
+                        <img src={imageUrl} style={{ width: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "60px" : "100%", objectFit: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "fill" : "contain", height: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "auto" : "80px" }} />
+                      </div>
+                    </label>
+                    <input hidden id="image" type="file" name="image" onChange={fileSelectHandler} />
+
+                    <div className="uploadImageSetting">
+                      <div className="deleteImageFileUpload ml-4" onClick={() => deleteImage()}>
+                        Sil
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16">
+                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <TextArea value={productData.productDescription} placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
+                </div>
+                <div className="mb-3">
+                  <Input value={productData.calorie} placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <Input value={productData.carbohydrate} placeholder="Lütfen karbonhidrat giriniz!" onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <Input value={productData.protein} placeholder="Lütfen protein giriniz!" onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <Input value={productData.oil} placeholder="Lütfen yağ giriniz!" onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
+                </div>
+
+                <Button type="primary" className="w-100" size="large" onClick={() => onEditDataProduct()}>
+                  Kayıt Et
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
       <div className="card">
 
         <div className="card-body">
@@ -338,7 +576,7 @@ const VegetablesSetting = () => {
                       <td>{data.farmerName}</td>
                       <td>
                         <Button type="primary" onClick={() => { showModal(); setUserıd(data._id) }}>Sil</Button>
-                        <Button className="ml-4" >Düzenle</Button>
+                        <Button className="ml-4" onClick={() => { setEditProductModalVisible(true); setProId(data._id); onEditProduct(data._id) }}>Düzenle</Button>
                       </td>
                     </tr>
                   ))
