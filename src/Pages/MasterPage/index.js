@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 import Sidebar from '../../Components/Layout/Sidebar/Sidebar';
 import AdminSetting from '../AdminSetting/AdminSetting';
+import FarmerSetting from '../FarmerSetting/FarmerSetting';
 import FooterSetting from '../FooterSetting/FooterSetting';
 import FruitsSetting from '../FruitsSetting/FruitsSetting';
 import HeaderSetting from '../HeaderSetting/HeaderSetting';
@@ -31,6 +32,7 @@ const MasterPage = () => {
                 <Route exact path="/fruits-setting" component={FruitsSetting} />
                 <Route exact path="/natural-teas-setting" component={Home} />
                 <Route exact path="/useful-plants-setting" component={Home} />
+                <Route exact path="/farmer-setting" component={FarmerSetting} />
             </Sidebar>
         </Switch>
     )

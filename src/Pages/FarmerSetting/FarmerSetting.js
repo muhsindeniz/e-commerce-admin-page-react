@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo, useLayoutEffect } from 'react'
 import { GlobalSettingsContext } from '../../Contexts/GlobalSettingsContext';
-import { Button, message, Spin, Modal, Select, Input, Form, Upload } from 'antd';
+import { Button, message, Spin, Modal, Select, Input, Switch, Upload } from 'antd';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
@@ -19,7 +19,7 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 
-const VegetablesSetting = () => {
+const FarmerSetting = () => {
 
   let { token } = useContext(GlobalSettingsContext)
   let history = useHistory();
@@ -29,22 +29,18 @@ const VegetablesSetting = () => {
   const [userList, setUserList] = useState(false);
   const [farmerList, setFarmerList] = useState(null)
   const [isUserModalVisible, setIsUserModalVisible] = useState(false);
+  let [genderChecked, setGenderChecked] = useState(null);
   const [editProductModalVisible, setEditProductModalVisible] = useState(false);
   let [imageData, setImageData] = useState(null)
   let [proId, setProId] = useState(null)
   let [imageUrl, setImageUrl] = useState("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
   let [productData, setProductData] = useState({
     "name": "",
-    "price": "",
-    "discount": "",
-    "newPrice": "",
-    "productDescription": "",
-    "farmerName": "",
+    "email": "",
+    "gender": "",
+    "phone": "",
     "avatar": "",
-    "calorie": "",
-    "carbohydrate": "",
-    "protein": "",
-    "oil": ""
+    "description": "",
   })
 
   function getBase64(file, cb) {
@@ -56,6 +52,10 @@ const VegetablesSetting = () => {
     reader.onerror = function (error) {
       console.log('Error: ', error);
     };
+  }
+
+  function gender(checked) {
+    setProductData({ ...productData, gender: checked === true ? "Kadın" : "Erkek" })
   }
 
   const showModal = () => {
@@ -71,15 +71,6 @@ const VegetablesSetting = () => {
     setIsModalVisible(false);
   };
 
-  function discount(data) {
-    let newP = (parseInt(productData.price) || 0) - (((parseInt(productData.price) || 0) * (parseInt(data) || 0)) / 100);
-    setProductData({ ...productData, discount: data, newPrice: newP })
-  }
-
-  function farmer(data) {
-    setProductData({ ...productData, farmerName: data })
-  }
-
   let fileSelectHandler = (e) => {
     setImageData(e.target.files[0])
     beforeUpload(e.target.files[0])
@@ -87,7 +78,7 @@ const VegetablesSetting = () => {
   }
 
   const onFinish = async () => {
-    if (productData.name == "" || productData.discount == "" || productData.price == "" || productData.newPrice == "" || productData.productDescription == "" || productData.farmerName == "" || productData.calorie == "" || productData.carbohydrate == "" || productData.oil == "") {
+    if (productData.name == "" || productData.email == "" || productData.phone == "" || productData.description == "") {
       message.info("Please fill in all fields")
     } else {
       setLoading(true)
@@ -102,18 +93,13 @@ const VegetablesSetting = () => {
       await axios.post(url, formData, config).then(resp => {
         setLoading(false)
         message.success(resp.data.result_message.message)
-        axios.post('http://localhost:3000/api/addVegetables', {
+        axios.post('http://localhost:3000/api/farmer', {
           name: productData.name,
-          price: productData.price,
-          discount: productData.discount,
-          newPrice: productData.newPrice,
-          productDescription: productData.productDescription,
-          farmerName: productData.farmerName,
+          email: productData.email,
+          phone: productData.phone,
+          gender: productData.gender,
           avatar: resp.data.result.path,
-          calorie: productData.calorie,
-          carbohydrate: productData.carbohydrate,
-          protein: productData.protein,
-          oil: productData.oil
+          description: productData.description
         }, {
           headers:
           {
@@ -125,13 +111,13 @@ const VegetablesSetting = () => {
             message.success("Ürün başarıyla eklendi");
             setIsUserModalVisible(false)
             setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" })
             setImageData(null)
             call();
           })
           .catch(error => {
             message.error("Could not save product information!")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" })
           })
       }).catch(err => {
         message.error("The image could not be loaded!");
@@ -142,31 +128,13 @@ const VegetablesSetting = () => {
   let call = useMemo(() => async () => {
     setLoading(true)
     if (token) {
-      await axios.get('http://localhost:3000/api/vegetables', {
-        headers: {
-          Authorization: token
-        }
-      })
-        .then(res => {
-          setUserList(res.data);
-          setLoading(false)
-        })
-        .catch(e => {
-          message.info(e)
-          setLoading(false)
-        })
-    }
-  });
-
-  let GetfarmerData = useMemo(() => async () => {
-    setLoading(true)
-    if (token) {
       await axios.get('http://localhost:3000/api/farmer', {
         headers: {
           Authorization: token
         }
       })
         .then(res => {
+          setUserList(res.data);
           setFarmerList(res.data);
           setLoading(false)
         })
@@ -178,7 +146,7 @@ const VegetablesSetting = () => {
   });
 
   useEffect(() => {
-    GetfarmerData()
+    setGenderChecked(productData.gender == "Erkek" ? false : true)
   }, [])
 
   useLayoutEffect(() => {
@@ -188,7 +156,7 @@ const VegetablesSetting = () => {
   let deleteUser = async (id) => {
     setLoading(true)
     if (id) {
-      await axios.delete(`http://localhost:3000/api/vegetables/${id}`, {
+      await axios.delete(`http://localhost:3000/api/farmer/${id}`, {
         headers: {
           Authorization: token
         }
@@ -212,7 +180,7 @@ const VegetablesSetting = () => {
 
   let onEditProduct = (id) => {
     if (id) {
-      axios.get(`http://localhost:3000/api/vegetables/${id}`, {
+      axios.get(`http://localhost:3000/api/farmer/${id}`, {
         headers: {
           Authorization: token
         }
@@ -220,18 +188,12 @@ const VegetablesSetting = () => {
         .then(res => {
           setProductData({
             ...productData,
-            avatar: res.data.result.avatar,
-            calorie: res.data.result.calorie,
-            carbohydrate: res.data.result.carbohydrate,
-            discount: res.data.result.discount,
-            farmerName: res.data.result.farmerName,
             name: res.data.result.name,
-            newPrice: res.data.result.newPrice,
-            oil: res.data.result.oil,
-            price: res.data.result.price,
-            productCategory: res.data.result.productCategory,
-            productDescription: res.data.result.productDescription,
-            protein: res.data.result.protein
+            email: res.data.result.email,
+            phone: res.data.result.phone,
+            gender: res.data.result.gender,
+            avatar: res.data.result.avatar,
+            description: res.data.result.description
           })
           setImageUrl(`http://localhost:3000/${res.data.result.avatar}`)
           setLoading(false)
@@ -244,22 +206,17 @@ const VegetablesSetting = () => {
   }
 
   let onEditDataProduct = async () => {
-    if (productData.name == "" || productData.discount == "" || productData.price == "" || productData.newPrice == "" || productData.productDescription == "" || productData.farmerName == "" || productData.calorie == "" || productData.carbohydrate == "" || productData.oil == "") {
+    if (productData.name == "" || productData.email == "" || productData.phone == "" || productData.description == "") {
       message.info("Please fill in all fields")
     } else {
       if (imageData === null) {
-        axios.patch(`http://localhost:3000/api/vegetables/${proId}`, {
+        axios.patch(`http://localhost:3000/api/farmer/${proId}`, {
           name: productData.name,
-          price: productData.price,
-          discount: productData.discount,
-          newPrice: productData.newPrice,
-          productDescription: productData.productDescription,
-          farmerName: productData.farmerName,
+          email: productData.email,
+          phone: productData.phone,
+          gender: productData.gender,
           avatar: productData.avatar,
-          calorie: productData.calorie,
-          carbohydrate: productData.carbohydrate,
-          protein: productData.protein,
-          oil: productData.oil
+          description: productData.description
         }, {
           headers:
           {
@@ -271,13 +228,13 @@ const VegetablesSetting = () => {
             message.success("Ürün başarıyla güncellendi");
             setEditProductModalVisible(false)
             setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" })
             setImageData(null)
             call();
           })
           .catch(error => {
             message.error("Could not save product information!")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" })
           })
       } else {
         const formData = new FormData;
@@ -293,16 +250,11 @@ const VegetablesSetting = () => {
           message.success(resp.data.result_message.message)
           axios.patch(`http://localhost:3000/api/vegetables/${proId}`, {
             name: productData.name,
-            price: productData.price,
-            discount: productData.discount,
-            newPrice: productData.newPrice,
-            productDescription: productData.productDescription,
-            farmerName: productData.farmerName,
+            email: productData.email,
+            phone: productData.phone,
+            gender: productData.gender,
             avatar: resp.data.result.path,
-            calorie: productData.calorie,
-            carbohydrate: productData.carbohydrate,
-            protein: productData.protein,
-            oil: productData.oil
+            description: productData.description
           }, {
             headers:
             {
@@ -314,13 +266,13 @@ const VegetablesSetting = () => {
               message.success("Ürün başarıyla güncellendi .!!");
               setEditProductModalVisible(false)
               setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" })
               setImageData(null)
               call();
             })
             .catch(error => {
               message.error("Could not save product information!")
-              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" })
             })
         }).catch(err => {
           message.error("The image could not be loaded!");
@@ -330,11 +282,13 @@ const VegetablesSetting = () => {
     }
   }
 
+  console.log(productData)
+
   return (
     <>
 
       <Modal title="Uyarı!" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        <p>Ürünü silmek istediğinizden emin misiniz ?</p>
+        <p>Çifçiyi silmek istediğinizden emin misiniz ?</p>
       </Modal>
 
       {
@@ -344,7 +298,7 @@ const VegetablesSetting = () => {
             <div className="card">
               <div className="card-header">
                 <h3>Ürün Ekleme</h3>
-                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" }); setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
+                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" }); setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
@@ -354,60 +308,15 @@ const VegetablesSetting = () => {
               <div className="card-body">
 
                 <div className="mb-3">
-                  <Input placeholder="Lütfen ürün adı giriniz!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
+                  <Input placeholder="Enter name!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
-                  <Input placeholder="Lütfen fiyat giriniz!" onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
+                  <Input placeholder="Enter email!" onChange={(e) => setProductData({ ...productData, email: e.target.value })} />
                 </div>
-
-                <div className="mb-3">
-                  <label>Lütfen indirim oranı giriniz!</label>
-                  <Select className="w-100" onChange={discount}>
-                    <Option value="0">%0</Option>
-                    <Option value="5">%5</Option>
-                    <Option value="10">%10</Option>
-                    <Option value="15">%15</Option>
-                    <Option value="20">%20</Option>
-                    <Option value="25">%25</Option>
-                    <Option value="30">%30</Option>
-                    <Option value="35">%35</Option>
-                    <Option value="40">%40</Option>
-                    <Option value="45">%45</Option>
-                    <Option value="50">%50</Option>
-                    <Option value="55">%55</Option>
-                    <Option value="60">%60</Option>
-                    <Option value="65">%65</Option>
-                    <Option value="70">%70</Option>
-                    <Option value="75">%75</Option>
-                    <Option value="80">%80</Option>
-                    <Option value="85">%85</Option>
-                    <Option value="90">%90</Option>
-                    <Option value="95">%95</Option>
-                    <Option value="100">%100</Option>
-                  </Select>
-                </div>
-
-                <h4 className="d-flex justify-content-center flex-column align-items-center">
-                  Yeni Fiyat
-                  <b className="ml-3">
-                    {
-                      (parseInt(productData.price) || 0) - (((parseInt(productData.price) || 0) * (parseInt(productData.discount) || 0)) / 100)
-                    }
-                  </b>
-                </h4>
-
-                <label>Lütfen çifçiyi seçiniz!</label>
-                <Select onChange={farmer} className="w-100">
-                  {
-                    farmerList && farmerList.map((farmer,index) => (
-                      <Option key={index} value={farmer.name}>{farmer.name}</Option>
-                    ))
-                  }
-                </Select>
 
                 <div className="mb-3 mt-3">
-                  <div>Lütfen avatar giriniz!</div>
+                  <div>Enter Avatar giriniz!</div>
 
                   <div className="d-flex">
                     <label htmlFor="image" className="fileUploadContainer">
@@ -429,22 +338,15 @@ const VegetablesSetting = () => {
                 </div>
 
                 <div className="mb-3">
-                  <TextArea placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
-                </div>
-                <div className="mb-3">
-                  <Input placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
+                  <Switch onChange={gender} size="default" checkedChildren="Female" unCheckedChildren="Male" className="mb-3" />
                 </div>
 
                 <div className="mb-3">
-                  <Input placeholder="Lütfen karbonhidrat giriniz!" onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
+                  <Input placeholder="Enter phone!" onChange={(e) => setProductData({ ...productData, phone: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
-                  <Input placeholder="Lütfen protein giriniz!" onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
-                </div>
-
-                <div className="mb-3">
-                  <Input placeholder="Lütfen yağ giriniz!" onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
+                  <Input placeholder="Enter description!" onChange={(e) => setProductData({ ...productData, description: e.target.value })} />
                 </div>
 
                 <Button type="primary" className="w-100" size="large" onClick={() => onFinish()}>
@@ -462,8 +364,8 @@ const VegetablesSetting = () => {
           <div className="add-user-popup-container">
             <div className="card">
               <div className="card-header">
-                <h3>Ürün Düzenleme</h3>
-                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" }); setEditProductModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
+                <h3>Farmer Edited</h3>
+                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" }); setEditProductModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
@@ -473,57 +375,13 @@ const VegetablesSetting = () => {
               <div className="card-body">
 
                 <div className="mb-3">
-                  <Input value={productData.name} placeholder="Lütfen ürün adı giriniz!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
+                  <Input value={productData.name} placeholder="Adınızı girin!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
-                  <Input value={productData.price} placeholder="Lütfen fiyat giriniz!" onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
+                  <Input value={productData.email} placeholder="Email girin!" onChange={(e) => setProductData({ ...productData, email: e.target.value })} />
                 </div>
 
-                <div className="mb-3">
-                  <label>Lütfen indirim oranı giriniz!</label>
-                  <Select value={productData.discount} className="w-100" onChange={discount}>
-                    <Option value="0">%0</Option>
-                    <Option value="5">%5</Option>
-                    <Option value="10">%10</Option>
-                    <Option value="15">%15</Option>
-                    <Option value="20">%20</Option>
-                    <Option value="25">%25</Option>
-                    <Option value="30">%30</Option>
-                    <Option value="35">%35</Option>
-                    <Option value="40">%40</Option>
-                    <Option value="45">%45</Option>
-                    <Option value="50">%50</Option>
-                    <Option value="55">%55</Option>
-                    <Option value="60">%60</Option>
-                    <Option value="65">%65</Option>
-                    <Option value="70">%70</Option>
-                    <Option value="75">%75</Option>
-                    <Option value="80">%80</Option>
-                    <Option value="85">%85</Option>
-                    <Option value="90">%90</Option>
-                    <Option value="95">%95</Option>
-                    <Option value="100">%100</Option>
-                  </Select>
-                </div>
-
-                <h4 className="d-flex justify-content-center flex-column align-items-center">
-                  Yeni Fiyat
-                  <b className="ml-3">
-                    {
-                      (parseInt(productData.price) || 0) - (((parseInt(productData.price) || 0) * (parseInt(productData.discount) || 0)) / 100)
-                    }
-                  </b>
-                </h4>
-
-                <label>Lütfen çifçiyi seçiniz!</label>
-                <Select value={productData.farmerName} onChange={farmer} className="w-100">
-                  {
-                    farmerList && farmerList.map((farmer,index) => (
-                      <Option key={index} value={farmer.name}>{farmer.name}</Option>
-                    ))
-                  }
-                </Select>
 
                 <div className="mb-3 mt-3">
                   <div>Lütfen avatar giriniz!</div>
@@ -548,22 +406,16 @@ const VegetablesSetting = () => {
                 </div>
 
                 <div className="mb-3">
-                  <TextArea value={productData.productDescription} placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
-                </div>
-                <div className="mb-3">
-                  <Input value={productData.calorie} placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
+                  <Switch onChange={gender} checked={genderChecked} size="default" checkedChildren="Female" unCheckedChildren="Male" className="mb-3" />
                 </div>
 
                 <div className="mb-3">
-                  <Input value={productData.carbohydrate} placeholder="Lütfen karbonhidrat giriniz!" onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
+                  <Input value={productData.phone} placeholder="Telefon giriniz!" onChange={(e) => setProductData({ ...productData, phone: e.target.value })} />
                 </div>
 
-                <div className="mb-3">
-                  <Input value={productData.protein} placeholder="Lütfen protein giriniz!" onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
-                </div>
 
                 <div className="mb-3">
-                  <Input value={productData.oil} placeholder="Lütfen yağ giriniz!" onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
+                  <TextArea value={productData.description} placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, description: e.target.value })} />
                 </div>
 
                 <Button type="primary" className="w-100" size="large" onClick={() => onEditDataProduct()}>
@@ -588,12 +440,11 @@ const VegetablesSetting = () => {
             <table className="table table-hover">
               <thead>
                 <tr>
-                  <th scope="col">Ürün</th>
-                  <th scope="col">İsim</th>
-                  <th scope="col">Fiyat</th>
-                  <th scope="col">İndirim</th>
-                  <th scope="col">Yeni Fiyat</th>
-                  <th scope="col">Üretici</th>
+                  <th scope="col">Çifçi</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Description</th>
                   <th scope="col"></th>
                 </tr>
               </thead>
@@ -603,10 +454,9 @@ const VegetablesSetting = () => {
                     <tr key={key}>
                       <td><img src={`http://localhost:3000/${data.avatar}`} width="120px" style={{ objectFit: "contain", maxHeight: "100px" }} /></td>
                       <td>{data.name}</td>
-                      <td>{data.price}</td>
-                      <td>{data.discount}</td>
-                      <td>{data.newPrice}</td>
-                      <td>{data.farmerName}</td>
+                      <td>{data.email}</td>
+                      <td>{data.phone}</td>
+                      <td>{data.description}</td>
                       <td>
                         <Button type="primary" onClick={() => { showModal(); setUserıd(data._id) }}>Sil</Button>
                         <Button className="ml-4" onClick={() => { setEditProductModalVisible(true); setProId(data._id); onEditProduct(data._id) }}>Düzenle</Button>
@@ -631,4 +481,4 @@ const VegetablesSetting = () => {
   )
 }
 
-export default VegetablesSetting;
+export default FarmerSetting;

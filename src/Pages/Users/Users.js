@@ -4,6 +4,18 @@ import { CompanySettingsContext } from '../../Contexts/CompanySettingsContext';
 import axios from 'axios';
 import { Button, message, Spin, Modal, Switch, Input, DatePicker, Form } from 'antd';
 
+function beforeUpload(file) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+    if (!isJpgOrPng) {
+        message.error('Yalnızca JPG/PNG dosyası yükleyebilirsiniz!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+        message.error('Resim 2MB den küçük olmalıdır!');
+    }
+    return isJpgOrPng && isLt2M;
+}
+
 const Users = () => {
 
     let { token } = useContext(GlobalSettingsContext)
@@ -13,14 +25,33 @@ const Users = () => {
     let [userId, setUserıd] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isUserModalVisible, setIsUserModalVisible] = useState(false);
-    let [userInfo, setUserInfo] = useState({ "name": "", "email": "", "gender": "Erkek", "birthdayString": "", "password": "" });
+    let [userInfo, setUserInfo] = useState({ "name": "", "email": "", "gender": "Erkek", "birthdayString": "", "password": "", "avatar": "" });
     const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY'];
-
-    console.log(userInfo)
+    let [imageData, setImageData] = useState(null)
+    let [imageUrl, setImageUrl] = useState("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
 
     function birthdayString(date, dateString) {
         setUserInfo({ ...userInfo, birthdayString: dateString || birthdayString })
         console.log(dateString)
+    }
+
+
+    function getBase64(file, cb) {
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            cb(reader.result)
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    }
+
+
+    let fileSelectHandler = (e) => {
+        setImageData(e.target.files[0])
+        beforeUpload(e.target.files[0])
+        getBase64(e.target.files[0], setImageUrl)
     }
 
     function gender(checked) {
@@ -93,26 +124,54 @@ const Users = () => {
         }
     }
 
-    let addUser = async () => {
-        setLoading(true)
-        await axios.post(`http://localhost:3000/api/register`, { ...userInfo }, {
-            headers: {
-                Authorization: token
+    let addUser = () => {
+        if (userInfo.name == "" || userInfo.email == "" || userInfo.birthdayString == "" || userInfo.password == "") {
+            message.info("Lütfen tüm alanları doldurun");
+        } else {
+            setLoading(true)
+            const formData = new FormData;
+            formData.append('image', imageData);
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
             }
-        })
-            .then(res => {
-                message.success("Kullanıcı başarıyla eklendi..")
-                call();
-                setUserInfo({ ...userInfo, name: "", email: "", birthdayString: "", gender: "", password: "" })
-                setLoading(false)
-                setIsUserModalVisible(false);
+            const url = 'http://localhost:3000/single';
+            axios.post(url, formData, config).then(resp => {
+                axios.post(`http://localhost:3000/api/register`, {
+                    name: userInfo.name,
+                    email: userInfo.email,
+                    birthdayString: userInfo.birthdayString,
+                    avatar: resp.data.result.path,
+                    password: userInfo.password,
+                    gender: userInfo.gender
+                }, {
+                    headers: {
+                        Authorization: token
+                    }
+                })
+                    .then(res => {
+                        message.success("Kullanıcı başarıyla eklendi..")
+                        call();
+                        setUserInfo({ ...userInfo, name: "", email: "", birthdayString: "", gender: "", password: "" })
+                        setLoading(false)
+                        setIsUserModalVisible(false);
+                    })
+                    .catch(e => {
+                        message.info(e)
+                        setLoading(false)
+                    })
+
+            }).catch(err => {
+                message.error("The image could not be loaded!");
             })
-            .catch(e => {
-                message.info(e)
-                setLoading(false)
-            })
+        }
     }
 
+
+    let deleteImage = () => {
+        setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
+    }
 
     return (
         <>
@@ -136,61 +195,49 @@ const Users = () => {
                             </div>
                             <div className="card-body">
 
-                                <Form
-                                    name="basic"
-                                    onFinish={onFinish}
-                                    onFinishFailed={onFinishFailed}
-                                >
-                                    <Form.Item
-                                        label="İsim Soyisim"
-                                        name="name"
-                                        rules={[{ required: true, message: 'Lütfen adınızı girin!' }]}
-                                    >
-                                        <Input onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })} type="text" placeholder="Enter Name" className="w-100 mb-3" />
-                                    </Form.Item>
+                                <div className="mb-3 mt-3">
+                                    <div>Lütfen avatar giriniz!</div>
 
-                                    <Form.Item
-                                        label="Email"
-                                        name="email"
-                                        rules={[{ required: true, message: 'Lütfen Email girin!' }]}
-                                        className="mb-3"
-                                    >
-                                        <Input onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })} type="email" placeholder="Enter Email" className="w-100 mb-3" />
-                                    </Form.Item>
+                                    <div className="d-flex">
+                                        <label htmlFor="image" className="fileUploadContainer">
+                                            <div>
+                                                <img src={imageUrl} style={{ width: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "60px" : "100%", objectFit: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "fill" : "contain", height: imageUrl == "https://i.dlpng.com/static/png/6669605_preview.png" ? "auto" : "80px" }} />
+                                            </div>
+                                        </label>
+                                        <input hidden id="image" type="file" name="image" onChange={fileSelectHandler} />
 
+                                        <div className="uploadImageSetting">
+                                            <div className="deleteImageFileUpload ml-4" onClick={() => deleteImage()}>
+                                                Sil
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16">
+                                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                    <Form.Item
-                                        label="Cinsiyet"
-                                        name="gender"
-                                        rules={[{ required: false }]}
-                                    >
-                                        <Switch onChange={gender} size="default" checkedChildren="Female" unCheckedChildren="Male" className="mb-3" />
-                                    </Form.Item>
+                                <div className="mb-3">
+                                    <Input onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })} type="text" placeholder="Enter Name" className="w-100 mb-3" />
+                                </div>
 
+                                <div className="mb-3">
+                                    <Input onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })} type="email" placeholder="Enter Email" className="w-100 mb-3" /></div>
 
-                                    <Form.Item
-                                        label="Doğum Tarihi"
-                                        name="birthday"
-                                        rules={[{ required: true, message: 'Lütfen Doğum Günü girin!' }]}
-                                    >
-                                        <DatePicker onChange={birthdayString} size="large" className="w-100 mb-3" format={dateFormatList} />
-                                    </Form.Item>
+                                <div className="mb-3">
+                                    <Switch onChange={gender} size="default" checkedChildren="Female" unCheckedChildren="Male" className="mb-3" />
+                                </div>
 
-                                    <Form.Item
-                                        label="Şifre"
-                                        name="password"
-                                        rules={[{ required: true, message: 'Lütfen Şifre giriniz!' }]}
-                                    >
-                                        <Input onChange={(e) => setUserInfo({ ...userInfo, password: e.target.value })} type="password" className="w-100 mb-3" placeholder="Enter Password" />
-                                    </Form.Item>
+                                <div className="mb-3">
+                                    <DatePicker onChange={birthdayString} size="large" className="w-100 mb-3" format={dateFormatList} />
+                                </div>
+                                <div className="mb-3">
+                                    <Input onChange={(e) => setUserInfo({ ...userInfo, password: e.target.value })} type="password" className="w-100 mb-3" placeholder="Enter Password" />
+                                </div>
 
-                                    <Form.Item>
-                                        <Button type="primary" className="w-100" size="large" htmlType="submit">
-                                            Kayıt Et
-                                        </Button>
-                                    </Form.Item>
-
-                                </Form>
+                                <Button type="primary" className="w-100" size="large" onClick={() => addUser()}>
+                                    Kayıt Et
+                                </Button>
                             </div>
                         </div>
                     </div>

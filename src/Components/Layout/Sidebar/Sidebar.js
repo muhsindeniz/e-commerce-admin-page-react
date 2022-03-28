@@ -66,18 +66,21 @@ const Sidebar = ({ children }) => {
                                 <Menu.Item key="4"><Link to="/header-setting">Header Ayarları</Link></Menu.Item>
                                 <Menu.Item key="5"><Link to="/footer-setting">Footer Ayarları</Link></Menu.Item>
                             </SubMenu>
-                            <SubMenu key="sub2" icon={<LaptopOutlined />} title="Kategoriler">
-                                <Menu.Item key="6"><Link to="/vegatables-setting">Sebzeler</Link></Menu.Item>
-                                <Menu.Item key="7"><Link to="/fruits-setting">Meyveler</Link></Menu.Item>
-                                <Menu.Item key="8"><Link to="/natural-teas-setting">Doğal Çaylar</Link></Menu.Item>
-                                <Menu.Item key="9"><Link to="/useful-plants-setting">Faydalı Bitkiler</Link></Menu.Item>
+                            <SubMenu key="sub2" icon={<UserOutlined />} title="Çifçi Ayarları">
+                                <Menu.Item key="6"><Link to="/farmer-setting">Çifçi Bilgileri</Link></Menu.Item>
                             </SubMenu>
-                            <SubMenu key="sub3" icon={<NotificationOutlined />} title="Diyet Listeleri">
-                                <Menu.Item key="10">option9</Menu.Item>
-                                <Menu.Item key="11">option12</Menu.Item>
+                            <SubMenu key="sub3" icon={<LaptopOutlined />} title="Kategoriler">
+                                <Menu.Item key="7"><Link to="/vegatables-setting">Sebzeler</Link></Menu.Item>
+                                <Menu.Item key="8"><Link to="/fruits-setting">Meyveler</Link></Menu.Item>
+                                <Menu.Item key="9"><Link to="/natural-teas-setting">Doğal Çaylar</Link></Menu.Item>
+                                <Menu.Item key="10"><Link to="/useful-plants-setting">Faydalı Bitkiler</Link></Menu.Item>
                             </SubMenu>
-                            <SubMenu key="sub4" icon={<NotificationOutlined />} title="Abone Ayarları">
-                                <Menu.Item key="12"><Link to="/subscriber-setting">Kayıtlı Aboneler</Link></Menu.Item>
+                            <SubMenu key="sub4" icon={<NotificationOutlined />} title="Diyet Listeleri">
+                                <Menu.Item key="11">option9</Menu.Item>
+                                <Menu.Item key="12">option12</Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="sub5" icon={<NotificationOutlined />} title="Abone Ayarları">
+                                <Menu.Item key="13"><Link to="/subscriber-setting">Kayıtlı Aboneler</Link></Menu.Item>
                             </SubMenu>
                         </Menu>
                     </Sider>
