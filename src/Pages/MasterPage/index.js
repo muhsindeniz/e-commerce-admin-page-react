@@ -7,6 +7,7 @@ import FooterSetting from '../FooterSetting/FooterSetting';
 import FruitsSetting from '../FruitsSetting/FruitsSetting';
 import HeaderSetting from '../HeaderSetting/HeaderSetting';
 import Home from '../Home/Home';
+import NaturalTeas from '../NaturalTeas/NaturalTeas';
 import Users from '../Users/Users';
 import VegetablesSetting from '../VegetablesSetting/VegetablesSetting';
 
@@ -30,7 +31,7 @@ const MasterPage = () => {
                 <Route exact path="/footer-setting" component={FooterSetting} />
                 <Route exact path="/vegatables-setting" component={VegetablesSetting} />
                 <Route exact path="/fruits-setting" component={FruitsSetting} />
-                <Route exact path="/natural-teas-setting" component={Home} />
+                <Route exact path="/natural-teas-setting" component={NaturalTeas} />
                 <Route exact path="/useful-plants-setting" component={Home} />
                 <Route exact path="/farmer-setting" component={FarmerSetting} />
             </Sidebar>
