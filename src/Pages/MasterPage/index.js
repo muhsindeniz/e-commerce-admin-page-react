@@ -10,6 +10,7 @@ import Home from '../Home/Home';
 import NaturalTeas from '../NaturalTeas/NaturalTeas';
 import Users from '../Users/Users';
 import VegetablesSetting from '../VegetablesSetting/VegetablesSetting';
+import UsefulPlantsSetting from '../UsefulPlantsSetting/UsefulPlantsSetting.js'
 
 const MasterPage = () => {
 
@@ -32,7 +33,7 @@ const MasterPage = () => {
                 <Route exact path="/vegatables-setting" component={VegetablesSetting} />
                 <Route exact path="/fruits-setting" component={FruitsSetting} />
                 <Route exact path="/natural-teas-setting" component={NaturalTeas} />
-                <Route exact path="/useful-plants-setting" component={Home} />
+                <Route exact path="/useful-plants-setting" component={UsefulPlantsSetting} />
                 <Route exact path="/farmer-setting" component={FarmerSetting} />
             </Sidebar>
         </Switch>
