@@ -326,7 +326,6 @@ const NaturalTeas = () => {
           message.error("The image could not be loaded!");
         })
       }
-
     }
   }
 

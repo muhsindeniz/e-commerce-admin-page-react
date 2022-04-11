@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 import Sidebar from '../../Components/Layout/Sidebar/Sidebar';
 import AdminSetting from '../AdminSetting/AdminSetting';
@@ -11,6 +11,7 @@ import NaturalTeas from '../NaturalTeas/NaturalTeas';
 import Users from '../Users/Users';
 import VegetablesSetting from '../VegetablesSetting/VegetablesSetting';
 import UsefulPlantsSetting from '../UsefulPlantsSetting/UsefulPlantsSetting.js'
+import CuponCodes from '../CuponCodes/CuponCodes';
 
 const MasterPage = () => {
 
@@ -35,6 +36,7 @@ const MasterPage = () => {
                 <Route exact path="/natural-teas-setting" component={NaturalTeas} />
                 <Route exact path="/useful-plants-setting" component={UsefulPlantsSetting} />
                 <Route exact path="/farmer-setting" component={FarmerSetting} />
+                <Route exact path="/cupon-codes" component={CuponCodes} />
             </Sidebar>
         </Switch>
     )

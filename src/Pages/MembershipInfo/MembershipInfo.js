@@ -26,7 +26,7 @@ const MembershipInfo = () => {
     let [showAddressPopup, setShowAddressPopup] = useState(false);
     let [addressInfo, setAddressInfo] = useState({ "name": "", "province": "", "district": "", "address": "", "addressTitle": "", "phone": "" })
     const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY'];
-    let [storageAddress, setStorageAdress] = useState(JSON.parse(localStorage.getItem("address")))
+    let [storageAddress, setStorageAdress] = useState(null)
 
     function birthdayString(date, dateString) {
         setUserInfo({ ...userInfo, birthdayString: dateString })
@@ -40,6 +40,7 @@ const MembershipInfo = () => {
         setUserInfo({ ...userInfo, name: user.name, email: user.email, birthdayString: user.birthdayString, gender: user.gender })
         get();
     }, [user])
+
 
     useEffect(() => {
         setGenderChecked(userInfo.gender == "Erkek" ? false : true)
@@ -93,6 +94,10 @@ const MembershipInfo = () => {
             });
         }
     }
+
+    useLayoutEffect(() => {
+        setStorageAdress(JSON.parse(localStorage.getItem("address")))
+    }, [localStorage.getItem("address")])
 
 
     return (
