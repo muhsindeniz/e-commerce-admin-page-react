@@ -77,8 +77,6 @@ const FarmerSetting = () => {
     getBase64(e.target.files[0], setImageUrl)
   }
 
-  console.log(imageUrl)
-
   const onFinish = async () => {
     if (productData.name == "" || productData.email == "" || productData.phone == "" || productData.description == "") {
       message.info("Please fill in all fields")
@@ -283,8 +281,6 @@ const FarmerSetting = () => {
 
     }
   }
-
-  console.log(productData)
 
   return (
     <>

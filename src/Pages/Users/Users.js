@@ -32,9 +32,7 @@ const Users = () => {
 
     function birthdayString(date, dateString) {
         setUserInfo({ ...userInfo, birthdayString: dateString || birthdayString })
-        console.log(dateString)
     }
-
 
     function getBase64(file, cb) {
         let reader = new FileReader();
@@ -46,7 +44,6 @@ const Users = () => {
             console.log('Error: ', error);
         };
     }
-
 
     let fileSelectHandler = (e) => {
         setImageData(e.target.files[0])
@@ -67,7 +64,6 @@ const Users = () => {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-
 
     const onFinish = () => {
         addUser()
