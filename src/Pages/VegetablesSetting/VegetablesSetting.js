@@ -44,8 +44,11 @@ const VegetablesSetting = () => {
     "calorie": "",
     "carbohydrate": "",
     "protein": "",
-    "oil": ""
+    "oil": "",
+    "stock": ""
   })
+
+  console.log(productData)
 
   function getBase64(file, cb) {
     let reader = new FileReader();
@@ -87,7 +90,7 @@ const VegetablesSetting = () => {
   }
 
   const onFinish = async () => {
-    if (productData.name == "" || productData.discount == "" || productData.price == "" || productData.newPrice == "" || productData.productDescription == "" || productData.farmerName == "" || productData.calorie == "" || productData.carbohydrate == "" || productData.oil == "") {
+    if (productData.name == "" || productData.discount == "" || productData.price == "" || productData.newPrice == "" || productData.productDescription == "" || productData.farmerName == "" || productData.calorie == "" || productData.carbohydrate == "" || productData.oil == "", productData.stock == "") {
       message.info("Please fill in all fields")
     } else {
       setLoading(true)
@@ -113,7 +116,8 @@ const VegetablesSetting = () => {
           calorie: productData.calorie,
           carbohydrate: productData.carbohydrate,
           protein: productData.protein,
-          oil: productData.oil
+          oil: productData.oil,
+          stock: productData.stock
         }, {
           headers:
           {
@@ -125,13 +129,13 @@ const VegetablesSetting = () => {
             message.success("Ürün başarıyla eklendi");
             setIsUserModalVisible(false)
             setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
             setImageData(null)
             call();
           })
           .catch(error => {
             message.error("Could not save product information!")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
           })
       }).catch(err => {
         message.error("The image could not be loaded!");
@@ -231,7 +235,8 @@ const VegetablesSetting = () => {
             price: res.data.result.price,
             productCategory: res.data.result.productCategory,
             productDescription: res.data.result.productDescription,
-            protein: res.data.result.protein
+            protein: res.data.result.protein,
+            stock: res.data.result.stock
           })
           setImageUrl(`http://localhost:3000/${res.data.result.avatar}`)
           setLoading(false)
@@ -259,7 +264,8 @@ const VegetablesSetting = () => {
           calorie: productData.calorie,
           carbohydrate: productData.carbohydrate,
           protein: productData.protein,
-          oil: productData.oil
+          oil: productData.oil,
+          stock: productData.stock
         }, {
           headers:
           {
@@ -271,13 +277,13 @@ const VegetablesSetting = () => {
             message.success("Ürün başarıyla güncellendi");
             setEditProductModalVisible(false)
             setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
             setImageData(null)
             call();
           })
           .catch(error => {
             message.error("Could not save product information!")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
           })
       } else {
         const formData = new FormData;
@@ -314,13 +320,13 @@ const VegetablesSetting = () => {
               message.success("Ürün başarıyla güncellendi .!!");
               setEditProductModalVisible(false)
               setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
               setImageData(null)
               call();
             })
             .catch(error => {
               message.error("Could not save product information!")
-              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
             })
         }).catch(err => {
           message.error("The image could not be loaded!");
@@ -344,7 +350,7 @@ const VegetablesSetting = () => {
             <div className="card">
               <div className="card-header">
                 <h3>Ürün Ekleme</h3>
-                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" }); setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
+                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" }); setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
@@ -354,10 +360,12 @@ const VegetablesSetting = () => {
               <div className="card-body">
 
                 <div className="mb-3">
+                  <label>Lütfen ürün adı giriniz!</label>
                   <Input placeholder="Lütfen ürün adı giriniz!" onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen fiyat giriniz!</label>
                   <Input placeholder="Lütfen fiyat giriniz!" onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
                 </div>
 
@@ -400,7 +408,7 @@ const VegetablesSetting = () => {
                 <label>Lütfen çifçiyi seçiniz!</label>
                 <Select onChange={farmer} className="w-100">
                   {
-                    farmerList && farmerList.map((farmer,index) => (
+                    farmerList && farmerList.map((farmer, index) => (
                       <Option key={index} value={farmer.name}>{farmer.name}</Option>
                     ))
                   }
@@ -429,21 +437,31 @@ const VegetablesSetting = () => {
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen açıklama giriniz!"</label>
                   <TextArea placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
                 </div>
                 <div className="mb-3">
+                  <label>Lütfen kalori giriniz!</label>
                   <Input placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen stokta ki ürün miktarını girin</label>
+                  <Input placeholder="Lütfen stokta ki ürün miktarını girin" onChange={(e) => setProductData({ ...productData, stock: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <label>Lütfen karbonhidrat giriniz!</label>
                   <Input placeholder="Lütfen karbonhidrat giriniz!" onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen protein giriniz!</label>
                   <Input placeholder="Lütfen protein giriniz!" onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen yağ giriniz!</label>
                   <Input placeholder="Lütfen yağ giriniz!" onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
                 </div>
 
@@ -463,7 +481,7 @@ const VegetablesSetting = () => {
             <div className="card">
               <div className="card-header">
                 <h3>Ürün Düzenleme</h3>
-                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" }); setEditProductModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
+                <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" }); setEditProductModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
@@ -519,7 +537,7 @@ const VegetablesSetting = () => {
                 <label>Lütfen çifçiyi seçiniz!</label>
                 <Select value={productData.farmerName} onChange={farmer} className="w-100">
                   {
-                    farmerList && farmerList.map((farmer,index) => (
+                    farmerList && farmerList.map((farmer, index) => (
                       <Option key={index} value={farmer.name}>{farmer.name}</Option>
                     ))
                   }
@@ -548,21 +566,31 @@ const VegetablesSetting = () => {
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen açıklama giriniz!"</label>
                   <TextArea value={productData.productDescription} placeholder="Lütfen açıklama giriniz!" onChange={(e) => setProductData({ ...productData, productDescription: e.target.value })} />
                 </div>
                 <div className="mb-3">
+                  <label>Lütfen kalori giriniz!</label>
                   <Input value={productData.calorie} placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen stokta ki ürün miktarını girin</label>
+                  <Input value={productData.stock} placeholder="Lütfen stokta ki ürün miktarını girin" onChange={(e) => setProductData({ ...productData, stock: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <label>Lütfen karbonhidrat giriniz!</label>
                   <Input value={productData.carbohydrate} placeholder="Lütfen karbonhidrat giriniz!" onChange={(e) => setProductData({ ...productData, carbohydrate: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen protein giriniz!</label>
                   <Input value={productData.protein} placeholder="Lütfen protein giriniz!" onChange={(e) => setProductData({ ...productData, protein: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
+                  <label>Lütfen yağ giriniz!</label>
                   <Input value={productData.oil} placeholder="Lütfen yağ giriniz!" onChange={(e) => setProductData({ ...productData, oil: e.target.value })} />
                 </div>
 
