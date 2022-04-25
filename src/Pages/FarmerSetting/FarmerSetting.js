@@ -295,7 +295,7 @@ const FarmerSetting = () => {
           <div className="add-user-popup-container">
             <div className="card">
               <div className="card-header">
-                <h3>Ürün Ekleme</h3>
+                <h3>Çifçi Ekleme</h3>
                 <button className="close-button" onClick={() => { setProductData({ ...productData, name: "", email: "", phone: "", gender: "", avatar: "", description: "" }); setIsUserModalVisible(false); setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png") }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />

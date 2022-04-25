@@ -44,7 +44,8 @@ const NaturalTeas = () => {
     "calorie": "",
     "carbohydrate": "",
     "protein": "",
-    "oil": ""
+    "oil": "",
+    "stock": ""
   })
 
   function getBase64(file, cb) {
@@ -113,7 +114,8 @@ const NaturalTeas = () => {
           calorie: productData.calorie,
           carbohydrate: productData.carbohydrate,
           protein: productData.protein,
-          oil: productData.oil
+          oil: productData.oil,
+          stock: productData.stock
         }, {
           headers:
           {
@@ -125,13 +127,13 @@ const NaturalTeas = () => {
             message.success("Ürün başarıyla eklendi");
             setIsUserModalVisible(false)
             setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
             setImageData(null)
             call();
           })
           .catch(error => {
             message.error("Could not save product information!")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
           })
       }).catch(err => {
         message.error("The image could not be loaded!");
@@ -231,7 +233,8 @@ const NaturalTeas = () => {
             price: res.data.result.price,
             productCategory: res.data.result.productCategory,
             productDescription: res.data.result.productDescription,
-            protein: res.data.result.protein
+            protein: res.data.result.protein,
+            stock: res.data.result.stock
           })
           setImageUrl(`http://localhost:3000/${res.data.result.avatar}`)
           setLoading(false)
@@ -259,7 +262,8 @@ const NaturalTeas = () => {
           calorie: productData.calorie,
           carbohydrate: productData.carbohydrate,
           protein: productData.protein,
-          oil: productData.oil
+          oil: productData.oil,
+          stock: productData.stock
         }, {
           headers:
           {
@@ -271,13 +275,13 @@ const NaturalTeas = () => {
             message.success("Ürün başarıyla güncellendi");
             setEditProductModalVisible(false)
             setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
             setImageData(null)
             call();
           })
           .catch(error => {
             message.error("Could not save product information!")
-            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+            setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
           })
       } else {
         const formData = new FormData;
@@ -302,7 +306,8 @@ const NaturalTeas = () => {
             calorie: productData.calorie,
             carbohydrate: productData.carbohydrate,
             protein: productData.protein,
-            oil: productData.oil
+            oil: productData.oil,
+            stock: productData.stock
           }, {
             headers:
             {
@@ -314,13 +319,13 @@ const NaturalTeas = () => {
               message.success("Ürün başarıyla güncellendi .!!");
               setEditProductModalVisible(false)
               setImageUrl("http://www.clker.com/cliparts/S/j/7/o/b/H/cloud-upload-outline.svg.med.png")
-              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
               setImageData(null)
               call();
             })
             .catch(error => {
               message.error("Could not save product information!")
-              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "" })
+              setProductData({ ...productData, name: "", newPrice: "", productDescription: "", farmerName: "", avatar: "", calorie: "", carbohydrate: "", protein: "", oil: "", price: "", discount: "", stock: "" })
             })
         }).catch(err => {
           message.error("The image could not be loaded!");
@@ -399,7 +404,7 @@ const NaturalTeas = () => {
                 <label>Lütfen çifçiyi seçiniz!</label>
                 <Select onChange={farmer} className="w-100">
                   {
-                    farmerList && farmerList.map((farmer,index) => (
+                    farmerList && farmerList.map((farmer, index) => (
                       <Option key={index} value={farmer.name}>{farmer.name}</Option>
                     ))
                   }
@@ -432,6 +437,11 @@ const NaturalTeas = () => {
                 </div>
                 <div className="mb-3">
                   <Input placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <label>Lütfen stokta ki ürün miktarını girin</label>
+                  <Input placeholder="Lütfen stokta ki ürün miktarını girin" onChange={(e) => setProductData({ ...productData, stock: e.target.value })} />
                 </div>
 
                 <div className="mb-3">
@@ -518,7 +528,7 @@ const NaturalTeas = () => {
                 <label>Lütfen çifçiyi seçiniz!</label>
                 <Select value={productData.farmerName} onChange={farmer} className="w-100">
                   {
-                    farmerList && farmerList.map((farmer,index) => (
+                    farmerList && farmerList.map((farmer, index) => (
                       <Option key={index} value={farmer.name}>{farmer.name}</Option>
                     ))
                   }
@@ -551,6 +561,11 @@ const NaturalTeas = () => {
                 </div>
                 <div className="mb-3">
                   <Input value={productData.calorie} placeholder="Lütfen kalori giriniz!" onChange={(e) => setProductData({ ...productData, calorie: e.target.value })} />
+                </div>
+
+                <div className="mb-3">
+                  <label>Lütfen stokta ki ürün miktarını girin</label>
+                  <Input value={productData.stock} placeholder="Lütfen stokta ki ürün miktarını girin" onChange={(e) => setProductData({ ...productData, stock: e.target.value })} />
                 </div>
 
                 <div className="mb-3">

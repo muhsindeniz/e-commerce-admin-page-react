@@ -308,7 +308,8 @@ const VegetablesSetting = () => {
             calorie: productData.calorie,
             carbohydrate: productData.carbohydrate,
             protein: productData.protein,
-            oil: productData.oil
+            oil: productData.oil,
+            stock: productData.stock
           }, {
             headers:
             {
