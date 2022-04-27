@@ -12,6 +12,8 @@ import Users from '../Users/Users';
 import VegetablesSetting from '../VegetablesSetting/VegetablesSetting';
 import UsefulPlantsSetting from '../UsefulPlantsSetting/UsefulPlantsSetting.js'
 import CuponCodes from '../CuponCodes/CuponCodes';
+import DietList from '../DietList/DietList';
+import AddDietList from '../DietList/AddDietList';
 
 const MasterPage = () => {
 
@@ -37,6 +39,10 @@ const MasterPage = () => {
                 <Route exact path="/useful-plants-setting" component={UsefulPlantsSetting} />
                 <Route exact path="/farmer-setting" component={FarmerSetting} />
                 <Route exact path="/cupon-codes" component={CuponCodes} />
+
+                <Route exact path="/diet-list" component={DietList} />
+                <Route exact path="/diet-list-add" component={AddDietList} />
+                <Route exact path="/diet-list-add/:id" component={AddDietList} />
             </Sidebar>
         </Switch>
     )

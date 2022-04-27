@@ -77,8 +77,7 @@ const Sidebar = ({ children }) => {
                                 <Menu.Item key="11"><Link to="/useful-plants-setting">Faydalı Bitkiler</Link></Menu.Item>
                             </SubMenu>
                             <SubMenu key="sub4" icon={<NotificationOutlined />} title="Diyet Listeleri">
-                                <Menu.Item key="12">option9</Menu.Item>
-                                <Menu.Item key="13">option12</Menu.Item>
+                                <Menu.Item key="12"><Link to="/diet-list">Diyet Listeleri</Link></Menu.Item>
                             </SubMenu>
                             <SubMenu key="sub5" icon={<NotificationOutlined />} title="Abone Ayarları">
                                 <Menu.Item key="14"><Link to="/subscriber-setting">Kayıtlı Aboneler</Link></Menu.Item>
