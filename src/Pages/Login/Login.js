@@ -53,7 +53,7 @@ const Login = () => {
                     <div className="row d-flex justify-content-center">
                         <div className="col-lg-6 col-md-6 col-sm-12">
                             <div className="account_form">
-                                <form action="javascript:void(0)">
+                                <form action="void(0)">
                                     <p>
                                         <label>Username or email <span>*</span></label>
                                         <input onChange={(e) => setLoginInfo({ ...loginInfo, email: e.target.value })} type="text" />

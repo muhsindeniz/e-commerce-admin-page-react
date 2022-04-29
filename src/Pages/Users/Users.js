@@ -20,9 +20,9 @@ const Users = () => {
 
     let { token } = useContext(GlobalSettingsContext)
     let { name } = useContext(CompanySettingsContext);
-    let [userList, setUserList] = useState(null);
+    let [userList, setUserList] = useState([]);
     let [loading, setLoading] = useState(false);
-    let [userId, setUserıd] = useState(null);
+    let [userId, setUserid] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isUserModalVisible, setIsUserModalVisible] = useState(false);
     let [userInfo, setUserInfo] = useState({ "name": "", "email": "", "gender": "Erkek", "birthdayString": "", "password": "", "avatar": "" });
@@ -75,10 +75,10 @@ const Users = () => {
     };
 
 
-    let call = useMemo(() => async () => {
+    let call = useMemo(() => () => {
         setLoading(true)
         if (token) {
-            await axios.get('http://localhost:3000/api/user', {
+            axios.get('http://localhost:3000/api/user', {
                 headers: {
                     Authorization: token
                 }
@@ -95,7 +95,7 @@ const Users = () => {
 
     });
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         call();
     }, [token])
 
@@ -268,13 +268,13 @@ const Users = () => {
                                     userList && userList.map((data, key) => (
                                         <tr key={key}>
                                             <th scope="row">{key + 1}</th>
-                                            <td>{data.name}</td>
-                                            <td>{data.birthdayString}</td>
-                                            <td>{data.email}</td>
-                                            <td>{data.gender}</td>
-                                            <td>{data.createdAt}</td>
+                                            <td>{data?.name}</td>
+                                            <td>{data?.birthdayString}</td>
+                                            <td>{data?.email}</td>
+                                            <td>{data?.gender}</td>
+                                            <td>{data?.createdAt}</td>
                                             <td>
-                                                <Button type="primary" onClick={() => { showModal(); setUserıd(data._id) }}>Sil</Button>
+                                                <Button type="primary" onClick={() => { showModal(); setUserid(data?._id) }}>Sil</Button>
                                                 <Button className="ml-4" >Düzenle</Button>
                                             </td>
                                         </tr>
