@@ -10,7 +10,7 @@
     "@testing-library/user-event": "^12.1.10",
     "antd": "^4.17.3",
     "axios": "^0.25.0",
-    "chart.js": "^3.7.1",
+    "chart.js": "^2.9.4",
     "faker": "^6.6.6",
     "js-cookie": "^3.0.1",
     "moment": "^2.29.2",
