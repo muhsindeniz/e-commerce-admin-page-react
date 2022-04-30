@@ -3,7 +3,7 @@ import React from 'react'
 const HeaderSetting = () => {
   return (
     <div>
-        <h1>Header Setting</h1>
+        <h1>Header Footer Setting</h1>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { Button, message, Spin, Modal, Select, Input, Switch, DatePicker } from 
 import axios from 'axios';
 import { GlobalSettingsContext } from '../../Contexts/GlobalSettingsContext'
 import moment from 'moment'
+import { Link } from 'react-router-dom';
 
 const SubscriberSetting = () => {
 
@@ -120,10 +121,16 @@ const SubscriberSetting = () => {
 
             <div className="card">
                 <div className="card-body">
-                    <h3>Kupon Kodları</h3>
+                    <h3>Aboneler</h3>
 
                     <div className="d-flex justify-content-end mb-3 w-100">
-                        <Button onClick={() => setIsUserModalVisible(true)}>Yeni Ekle</Button>
+                        <a target="_blank" href={`mailto: ${
+                            cuponList && cuponList.map(resp => {
+                                return resp.email
+                            })
+                        }, `}>
+                            <Button>Toplu Duyuru Gönder</Button>
+                        </a>
                     </div>
 
                     <div className="table-responsive">

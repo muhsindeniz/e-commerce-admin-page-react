@@ -23,20 +23,23 @@ const Sidebar = ({ children }) => {
     let [collapsed, setCollapsed] = useState(false)
 
     let logOut = () => {
-        message.info("Çıkış yapılıyor...")
-        setTimeout(() => {
-            localStorage.removeItem("admin")
-            localStorage.removeItem("adminToken")
-            setUser(null)
-            setToken(null)
-            message.success("Başarıyla çıkış yapıldı.")
-            history.push('/login')
-        }, 2000)
+        localStorage.removeItem("admin")
+        localStorage.removeItem("adminToken")
+        setUser(null)
+        setToken(null)
+        message.success("Başarıyla çıkış yapıldı.")
+        history.push('/login')
     }
 
     let onCollapse = () => {
         setCollapsed(!collapsed);
     };
+
+    useEffect(() => {
+        if (!token) {
+            history.push('/login')
+        }
+    }, [])
 
     return (
         <>
@@ -64,8 +67,7 @@ const Sidebar = ({ children }) => {
                                 <Menu.Item key="2"><Link to="/admin-setting">Yönetici Ayarları</Link></Menu.Item>
                                 <Menu.Item key="3"><Link to="/users">Kullanıcılar</Link></Menu.Item>
                                 <Menu.Item key="4"><Link to="/cupon-codes">Kupon Kodları</Link></Menu.Item>
-                                <Menu.Item key="5"><Link to="/header-setting">Header Ayarları</Link></Menu.Item>
-                                <Menu.Item key="6"><Link to="/footer-setting">Footer Ayarları</Link></Menu.Item>
+                                <Menu.Item key="5"><Link to="/header-footer-setting">Header & Footer</Link></Menu.Item>
                             </SubMenu>
                             <SubMenu key="sub2" icon={<UserOutlined />} title="Çifçi Ayarları">
                                 <Menu.Item key="7"><Link to="/farmer-setting">Çifçi Bilgileri</Link></Menu.Item>
