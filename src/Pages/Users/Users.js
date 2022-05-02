@@ -274,8 +274,7 @@ const Users = () => {
                                             <td>{data?.gender}</td>
                                             <td>{data?.createdAt}</td>
                                             <td>
-                                                <Button type="primary" onClick={() => { showModal(); setUserid(data?._id) }}>Sil</Button>
-                                                <Button className="ml-4" >Düzenle</Button>
+                                                <Button type="primary" className="w-100" onClick={() => { showModal(); setUserid(data?._id) }}>Sil</Button>
                                             </td>
                                         </tr>
                                     ))

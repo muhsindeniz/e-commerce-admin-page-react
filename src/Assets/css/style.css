@@ -14718,3 +14718,18 @@ iframe {
       width: 100vw;
       min-height: 450px;
   }
+
+  .form-container input,
+  .form-container textarea{
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 5px;
+    border: solid 1px #ccc;
+  }
+
+  .form-container input:focus,
+  .form-container textarea:focus{
+    border-color: #40a9ff;
+    box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
+    transition: ease .4s all;
+  }
