@@ -14,6 +14,7 @@ import CuponCodes from '../CuponCodes/CuponCodes';
 import DietList from '../DietList/DietList';
 import AddDietList from '../DietList/AddDietList';
 import SubscriberSetting from '../SubscriberSetting/SubscriberSetting';
+import Orders from '../Orders/Orders';
 
 const MasterPage = () => {
 
@@ -40,6 +41,7 @@ const MasterPage = () => {
                 <Route exact path="/useful-plants-setting" component={UsefulPlantsSetting} />
                 <Route exact path="/farmer-setting" component={FarmerSetting} />
                 <Route exact path="/cupon-codes" component={CuponCodes} />
+                <Route exact path="/orders" component={Orders} />
 
                 <Route exact path="/diet-list" component={DietList} />
                 <Route exact path="/diet-list-add" component={AddDietList} />

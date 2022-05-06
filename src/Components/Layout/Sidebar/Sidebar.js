@@ -8,7 +8,7 @@ import {
     UserOutlined,
     LaptopOutlined,
     NotificationOutlined,
-    LogoutOutlined,
+    UnorderedListOutlined,
     LoginOutlined
 } from '@ant-design/icons';
 
@@ -69,6 +69,7 @@ const Sidebar = ({ children }) => {
                                 <Menu.Item key="4"><Link to="/cupon-codes">Kupon Kodları</Link></Menu.Item>
                                 <Menu.Item key="5"><Link to="/header-footer-setting">Header & Footer</Link></Menu.Item>
                             </SubMenu>
+                            <Menu.Item icon={<UnorderedListOutlined />} key="6"><Link to="/orders">Siparişler</Link></Menu.Item>
                             <SubMenu key="sub2" icon={<UserOutlined />} title="Çifçi Ayarları">
                                 <Menu.Item key="7"><Link to="/farmer-setting">Çifçi Bilgileri</Link></Menu.Item>
                             </SubMenu>

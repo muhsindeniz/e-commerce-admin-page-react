@@ -14733,3 +14733,7 @@ iframe {
     box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
     transition: ease .4s all;
   }
+
+  .table-responsive table tbody tr td:nth-child(6){
+      text-align: left !important;
+  }
